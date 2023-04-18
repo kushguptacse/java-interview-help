@@ -2,6 +2,14 @@
 It covers some hands-on notes on various topic and resources required to clear interview
 ## Java
 1. Integer i=127;Integer j=127; both i==j and i.equals(j) will give true. but for value >127 '==' operator gives false. Reason-> Whenever you are creating Integer objects using auto boxing, compiler rewrites that statement with Integer.valueOf(int i) method. This method is implemented such that the frequently used values are cached. I.e. internally it maintains an array of Integer objects for range from -128 to 127.<br/>
+2. if 2 interfaces has same default method and class implement both of the interfaces, in such case compile time error will come.</br>
+3. interface Predicate<T>{ boolean test(T t); } </br>
+4. interface Consumer<T>{ void accept(T t};} </br>
+5. interface Function<T,R>{ R apply(T t);} </br>
+6. interface Supplier<T>{ T get(); } </br>
+7. In java 9, private and static method are allowed in interface.</br>
+8. In java 9, We can create immutable collection by using static 'of' method for Set,List and Map. like List.of(1,2,3). prior to java 9 we need to use Collections.unmodifiableList type method.</br>
+9. Prior to java 9, try with resopurce require resource needed to be created in->  try (Scanner sc=new Scanner()){}. but from java 9, resource created outside the try bracket can also be used inside it) -> Scanner sc=new Scanner(); try(sc){}.</br>
 ### Collection hierarchy
 1. Below are popular interface, classes related to Collection and are present in java.util package-><br/>
 2. For collection hierarchy visit -> https://dzone.com/articles/java-collections<br/>

@@ -62,10 +62,22 @@ It uses locking of bucket level instead of locking entire collection like hashTa
 11. **Thread.sleep** is static method. It pauses current thread but does not release lock.throws InterruptedException <br/>
 12. **Thread.yield** is static method. it provides info to scheduler that current thread is ready to suspend the execution of the current thread. but it will depend on scheduler if it is suspended or not. just like sleep it also does not release lock. <br/>
 ### Database
-1. transaction isolation levels -> https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/ <br/>
-2. ACID property. atomic, consistent,integrety and durability. https://www.geeksforgeeks.org/acid-properties-in-dbms/ <br/>
-3. 2 phase commit, in distributed transactions, transaction manager gives instruction to different resource manager( 1 RM for 1 db). so suppose tranasction depeends on 3 db's. first transaction manager gets the status of all 3 db's if transaction succeeds. after that TM sends instruction to each of the RM to commit. then only respective records are commited in the individual database, else rollback happen.<br/>
-4. Optimistic and Pessimistic Lock: https://vladmihalcea.com/optimistic-vs-pessimistic-locking/ <br/>
+1. **transaction isolation levels**-> <br>
+1.1 **Read uncommitted**- handles nothing<br> 
+1.2 **Read Committed**- handles **dirty read**(T1 has done some update and before commiting it T2 reads that updated record. later T1 rollback. hence T2 has read data which never existed),Sol-> The transaction holds a read or write lock on the current row till it is committed and thus prevents other transactions from reading, updating, or deleting it. <br> 
+1.3 **Repeatable Read** - handles **non repeatable read**(T1 has read row with some data,T2 now has updated value of same row and commit it,Now T1 if execute read query again for same row it will get different data).sol-> The transaction holds lock on all rows matching query criteria. <br> 
+1.4 Serializable- handles phantom read(T1 retrieves a set of rows acc to search criteria. Now, T2 generates some new rows that match the search criteria for transaction T1). sol-> table level lock is taken. <br>
+https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/ <br>
+2. **ACID property. atomicity, consistency, isolation and durability.**<br> https://www.geeksforgeeks.org/acid-properties-in-dbms/ <br/>
+3. **Optimistic and Pessimistic Lock**: https://vladmihalcea.com/optimistic-vs-pessimistic-locking/ <br/>
+4. **CAP -> https://www.scylladb.com/glossary/cap-theorem/<br>
+4.1 **consistency** - Consistency of CAP theorem means that regardless of the node they connect to, all clients see the same data always.i.e. replication must be instant<br>
+4.2 **Availability** - even if one or more nodes are down, any client making a data request receives a valid response. <br>
+4.3 **Partition Tolerance** - in spite of any number of breakdowns in communication between nodes in the system, the cluster will continue to work.<br>
+No sql supports partition tolerance always.<br>
+AP - Cassandra<br>
+CP - MongoDB<br> if master down, then till it is elected back system will not be available for write operation.<br>
+
 ### Security
 1. CORS - cross origin request sharing. when 1 app from 1 domain want to access api from other domain. it will not be allowed by default. need to use @CrossOrigin anotation provided by spring. <br/>
 2. CSRF - cross site request forgery. here in a browser window suppose linkedin is open and if another site get access valid session and by using it try to get info of linkedin that will be called CSRF. spring prevent it by using csrf filet which attach csrftoken with each req. and hence fake req will not have this token to get illegal info. <br/>
@@ -104,6 +116,7 @@ A GROUP BY clause requires that every column that the query returns is either a 
 18. we can only do rollback on un-committed commands. once commit is done it is saved permanently.<br>
 19. we can delete data from 2 tables simulatenously by using delete query and join those 2 tables.<br>
 20. **Delete duplicate records->** first using count, group by and having we can find duplicate rows. then use delete query along with in clause and max function to remove one of them. complete example https://www.sqlshack.com/different-ways-to-sql-delete-duplicate-rows-from-a-sql-table/<br>
+21. to identify which query is taking long time?
 
 ### AWS
 1. Regions -> aws services are spread across multiple locations and they are called regions.</br>
@@ -123,6 +136,39 @@ A GROUP BY clause requires that every column that the query returns is either a 
 15. s3 storage classes. in case needed go through -> https://www.geeksforgeeks.org/amazon-s3-storage-classes/ </br>
 16. RDS and dynamo db of AWS- rds is relational database service. dynamo db is no sql db.</br>
 17. Types of load balancers -> https://linuxhint.com/load-balancers-types-aws/ </br>
+
+
+### Spring
+1. https://idemia.udemy.com/course/spring-interview-questions-and-answers </br>
+2. life cycle of bean. https://howtodoinjava.com/spring-core/spring-bean-life-cycle/ </br>
+3. https://stackoverflow.com/questions/10604298/spring-component-versus-bean</br>
+4. @SpringBootApplication: It is a combination of three annotations @EnableAutoConfiguration, @ComponentScan, and @Configuration.</br>
+5. **transaction propagation level**-> https://www.baeldung.com/spring-transactional-propagation-isolation<br>
+@Transactional annotation is applied on class level or can also be applied to method level.<br>
+REQUIRED, SUPPORTS, MANDATORY, NEVER, NOT_SUPPORTED, REQUIRES_NEW, NESTED 
+
+### Microservices
+1. **Monolith vs SOA vs Microservices** -><br>
+1.1 **Monolith**->application is deployed as a single process. it is written in single language and has single database.<br>
+1.2 **Software As Service - SOA**-> create independent service of different features like authentication, payment, order mngt. but still all are part of single deployment and use single database. it is better than monolithic as here code can be re-used and better organized which make manitainence easier. <br>
+1.3 **Microservices**-> here each service is autonomous and deployed independently. they have seperate database. can be sacalled independently and can be written in different language. disadv-> here since every service needed to call other service either via api or async queue. there is some latency which was not there earlier in monolithic.<br>
+In case needed,then only watch -> https://www.youtube.com/watch?v=XjpxyGEUzBs
+2. sample microservice architecture->  https://idemia.udemy.com/course/microservices-interview-questions-passsing-guarranteed/learn/lecture/28869880#overview.<br>
+3.**Blast radius** -> it tells degree to which system will get affected if microservice failed or shutdown. to make microservice blast radius less and make it more resilient-> we can make independent database for each microservice, implement circuit breaker,can opt async communication <br>
+4.**Circuit breaker pattern** -> Here we set threshold to say 3. and circuit breaker service will act as proxy and checks if target service is reachable. if not and retry exhausts then it will instead of passing req to target can directly return info to caller. circuit breaker has 3 state-> open,closed and half-open. on closed state call to target is made. on open state circuit breaker itself return response and dont call target and on half-open, half req will be sent to target and half handled by circuit breaker.<br>
+5. **event vs command** -> Event is something that had already been happened. and command is something that we want to be done. Generally, an event can be the result of the completion of a command. command can have priority and hence order can changed. but on other hand event since already happended and hence order is fixed. example-> after payment has been done, payment done event has been fired. after recieving event, order service updates order and publish 'send invoice' command to message broker or might call api. command has single consumer and multiple senders. event has multiple consumer and single sender.<br>
+6. **managing distributed transactions** -> 2 Phase commit and saga are ways to manage it. <br>
+6.1 **2 Phase commit protocol**-> 2 phase commit, in distributed transactions, transaction manager(cordinator) gives instruction to different resource manager( 1 RM for 1 db). so suppose tranasction depends on 3 db's. in first phase which is called prepare, The first phase is named ‘prepare’ and the coordinator queries participants if they are ready to finish with the commit. The second phase is named ‘commit’ and coordinator commands participants to commit and made changes visible to the outer world. Coordinator commands to commit only if all participants voted for it. If some of the participant votes ‘abort’ then the whole transaction and all participants are rolled back. It means any change made to the participant during the transaction is aborted. <br>
+6.1.1 It is designed in a way that if node is saying they are ready in phase 1, they will never crash in phase 2, else that crashed node will be ignored. and suppose later that crashed node came back then by using log written on its machine they will perform commit. <br>
+6.1.2 If cordinator node failed then in such case others nodes wait for the coordinator to be up again. or else they need to decide by themselves about fate of transactions which is generally not possible.<br>
+6.1.3 It is synchronous is nature and hence not sutiable for long running transactions.<br>
+6.1.4 it is not possible to implement in no sql database. for relational also they all must support cordintator node to be able to implement it.<br>
+6.2 **SAGA pattern**->It is aysnchronous as here each microservice handle there own transaction. SAGA can be command based or event based.<br>
+https://www.youtube.com/watch?v=WnZ7IcaN_JA<br>
+6.2.1 **choreography**->It is event based. Here suppose customer placed order. order service create order and order create event is added into event queue(can be kafka). since payment service subscribed to order create event. it will receive it and perform payment. if it succeed or fail the payment done/not done event is fired and pushed into event queue. order service event handler receive it and update order status from pending to successful.disadv -> it might be possible to get deadlock if design is not correctly made. i.e. if 1 microservice depend on 2nd and 2nd on event created by 1st<br>
+Here failure event will be used by microservice to decide there action and in such case compensating query needs to be fired to undo changes.<br>
+6.2.2 **orchestration**->It is command based. here single central orchestrator service manages the transaction flow. disadv -> here it is so much depedent on central service. and change done in any service will affect central service.<br>
+If any of the microservices encounter a failure, the orchestrator is responsible for invoking the necessary compensating transactions<br>
 
 
 

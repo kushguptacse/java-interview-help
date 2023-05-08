@@ -1,4 +1,4 @@
-# Interview-Help
+# Important Notes
 It covers some hands-on notes on various topic and resources required to clear interview
 ## Java
 1. Integer i=127;Integer j=127; both i==j and i.equals(j) will give true. but for value >127 '==' operator gives false. Reason-> Whenever you are creating Integer objects using auto boxing, compiler rewrites that statement with Integer.valueOf(int i) method. This method is implemented such that the frequently used values are cached. I.e. internally it maintains an array of Integer objects for range from -128 to 127.<br/>
@@ -48,6 +48,7 @@ It covers some hands-on notes on various topic and resources required to clear i
 It uses locking of bucket level instead of locking entire collection like hashTable.
 29. **java.lang.Comparable** interface provide public int compareTo(T o) method. wrapper classes,String class provide there own comparable for default sorting.<br/>
 30. **java.lang.Comparator** interface provide public int compare(T o1,T o2) method. when we want to provide custom sorting then in such case we use it apart from default provided by comparable<br/>
+
 ### Thread
 1. If we call run method on thread object. it will not be executed in a seprate thread. instead it will be invoked like normal method.</br>
 2. If we call start method twice on thread. it will give IllegalThreadStateException exception when tried to call second time. <br/>
@@ -61,15 +62,16 @@ It uses locking of bucket level instead of locking entire collection like hashTa
 10. **Deamon Thread** are low priority thread that runs on background. we can also make our own thread as deamon thread by calling setDaemon method on thread object else by default it will be user thread. garbage collector thread is example of deamon thread. When all user threads have completed their execution, the JVM terminate. at that time If JVM finds a running daemon thread, it terminates the thread and, after that, shutdown it. <br/>
 11. **Thread.sleep** is static method. It pauses current thread but does not release lock.throws InterruptedException <br/>
 12. **Thread.yield** is static method. it provides info to scheduler that current thread is ready to suspend the execution of the current thread. but it will depend on scheduler if it is suspended or not. just like sleep it also does not release lock. <br/>
+
 ### Database
 1. **transaction isolation levels**-> <br>
 1.1 **Read uncommitted**- handles nothing<br> 
 1.2 **Read Committed**- handles **dirty read**(T1 has done some update and before commiting it T2 reads that updated record. later T1 rollback. hence T2 has read data which never existed),Sol-> The transaction holds a read or write lock on the current row till it is committed and thus prevents other transactions from reading, updating, or deleting it. <br> 
 1.3 **Repeatable Read** - handles **non repeatable read**(T1 has read row with some data,T2 now has updated value of same row and commit it,Now T1 if execute read query again for same row it will get different data).sol-> The transaction holds lock on all rows matching query criteria. <br> 
-1.4 Serializable- handles phantom read(T1 retrieves a set of rows acc to search criteria. Now, T2 generates some new rows that match the search criteria for transaction T1). sol-> table level lock is taken. <br>
+1.4 **Serializable**- handles **phantom read**(T1 retrieves a set of rows acc to search criteria. Now, T2 generates some new rows that match the search criteria for transaction T1). sol-> table level lock is taken. <br>
 https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/ <br>
 2. **ACID property. atomicity, consistency, isolation and durability.**<br> https://www.geeksforgeeks.org/acid-properties-in-dbms/ <br/>
-3. **Optimistic and Pessimistic Lock**: https://vladmihalcea.com/optimistic-vs-pessimistic-locking/ <br/>
+3. **Optimistic and Pessimistic Lock**: pessimistic lock requires write lock to be taken if want to update something. in such case other transaction has to release any lock(read/write) in order for transaction 2 to proceeed with update. optmisitic lock does not perform lock acutally here seperate version column is also maintained in every table. whenerver update is performed version column present will be updated also. <br/> https://vladmihalcea.com/optimistic-vs-pessimistic-locking/ <br/>
 4. **CAP -> https://www.scylladb.com/glossary/cap-theorem/<br>
 4.1 **consistency** - Consistency of CAP theorem means that regardless of the node they connect to, all clients see the same data always.i.e. replication must be instant<br>
 4.2 **Availability** - even if one or more nodes are down, any client making a data request receives a valid response. <br>
@@ -80,12 +82,14 @@ CP - MongoDB<br> if master down, then till it is elected back system will not be
 
 ### Security
 1. CORS - cross origin request sharing. when 1 app from 1 domain want to access api from other domain. it will not be allowed by default. need to use @CrossOrigin anotation provided by spring. <br/>
-2. CSRF - cross site request forgery. here in a browser window suppose linkedin is open and if another site get access valid session and by using it try to get info of linkedin that will be called CSRF. spring prevent it by using csrf filet which attach csrftoken with each req. and hence fake req will not have this token to get illegal info. <br/>
+2. CSRF - cross site request forgery. here in a browser window suppose linkedin is open and if another site get access to valid session and by using it, try to get info of linkedin that will be called CSRF. spring prevent it by using csrf filter which attach csrf token with each req. and hence fake req will not have this token to get illegal info. <br/>
 
 ### Design pattern
-1. creational -> singleton, prototype, builder, factory method.</br>
-2. Structural  -> Adaptor, proxy, Decorator <br/>
-3. Behavioral -> Iterator, template, chain of responsibility. <br/>
+1. **SOLID design principle**-> single responsibilty, open close, liskov substituion, interface segregation, dependency inversion<br>
+2. **creational** -> how to create objects while hiding the creation logic-> singleton(Runtime.getRuntime()), prototype(Object.clone), builder (StringBuilder), factory method(Calendar.getInstance)<br>
+3. **Structural**  -> How classes and object are arranged-> Adaptor(java.io.InputStreamReader and java.io.OutputStreamWritter), proxy(Spring framework - aop, transaction), Decorator(BufferedOutputStream decorates OutputStream Object) <br>
+4. **Behavioral** -> How objects interact with eache other-> Iterator(java iterator), template(Spring jdbc), chain of responsibility(javax.servlet.Filter), Strategy (Collections.sort -> java.util.Comparator)<br>
+https://github.com/kushguptacse/designPattern<br>
 
 ### sql
 1. **DDL - Data definition language**. it is used to create db schema or structure. create, alter, drop, rename, truncate.<br/>
@@ -119,33 +123,47 @@ A GROUP BY clause requires that every column that the query returns is either a 
 21. to identify which query is taking long time?
 
 ### AWS
-1. Regions -> aws services are spread across multiple locations and they are called regions.</br>
-2. Zones -> each region is further divided into zones. where every region has atleast 2 zones. if 1 zone goes down, other can serve. each availability zone can have multiple data centers.</br>
-3. Edge locations-> to make it near to end customer, betweeen zone and user there is an edge locations, so that user traffic does not need to travel too much to reach zone, instead edge locations full fill the request. </br>
-4. EC2 stand for elastic compute cloud. they are virtual servers.</br>
-5. AMI stand for amazon machine image. it will have softwares that we want to part of machine once it launched.</br>
-6. EC2 spot instance. by default ec2 is on demand instance. A Spot Instance uses spare EC2 capacity that is available for less than the On-Demand price. Because Spot Instances enable you to request unused EC2 instances at steep discounts, you can lower your Amazon EC2 costs significantly. When you use Spot Instances, you must be prepared for interruptions. Amazon EC2 can interrupt your Spot Instance when the demand for Spot Instances rises or when the supply of Spot Instances decreases. When Amazon EC2 interrupts a Spot Instance, it provides a Spot Instance interruption notice, which gives the instance a two-minute warning before Amazon EC2 interrupts it.</br>
-7. Public vs elastic ip -> when we launch the ec2 instance it is assigned private and public ip address. public ip address is used by client to access the application on that machine. but whenever we restart the machine that address will get changed. for that elastic ip can be created which will remain same but we need to pay for that ip.</br>
-8. If you stop the instance, we will not be charged. and we can start it back again later. but if terminate the instance it cannot be retrieved.</br>
+1. **Regions** -> aws services are spread across multiple locations and they are called regions.</br>
+2. **Zones** -> each region is further divided into zones. where every region has atleast 2 zones. if 1 zone goes down, other can serve. each availability zone can have multiple data centers.</br>
+3. **Edge locations**-> to make it near to end customer, betweeen zone and user there is an edge locations, so that user traffic does not need to travel too much to reach zone, instead edge locations full fill the request. </br>
+4. **EC2 stand for elastic compute cloud.** they are virtual servers.</br>
+5. **AMI stand for amazon machine image.** it will have softwares that we want to part of machine once it launched.</br>
+6. **EC2 spot instance.** by default ec2 is on demand instance. A Spot Instance uses spare EC2 capacity that is available for less than the On-Demand price. Because Spot Instances enable you to request unused EC2 instances at steep discounts, you can lower your Amazon EC2 costs significantly. When you use Spot Instances, you must be prepared for interruptions. Amazon EC2 can interrupt your Spot Instance when the demand for Spot Instances rises or when the supply of Spot Instances decreases. When Amazon EC2 interrupts a Spot Instance, it provides a Spot Instance interruption notice, which gives the instance a two-minute warning before Amazon EC2 interrupts it.</br>
+7. **Public vs elastic ip** -> when we launch the ec2 instance it is assigned private and public ip address. public ip address is used by client to access the application on that machine. but whenever we restart the machine that address will get changed. for that elastic ip can be created which will remain same but we need to pay for that ip.</br>
+8. **Terminate vs stop instance** If you stop the instance, we will not be charged. and we can start it back again later. but if terminate the instance it cannot be retrieved.</br>
 9. To secure ec2 instance we can create inbound and outbound rules under security group. inbound rule define who can access into VM. and outbound define what can be accessed by vm.</br>
-10. To do auto-scaling. first create launch config which include AMI and other config required to make ec2 instance ready to serve. second step is to create auto scaling group. where we specify scaling policy on basis of which scale up and down of ec2 instacnes should happen. like cpu,disk perct.</br>
+10. To do auto-scaling. first create launch config which include AMI and other config required to make ec2 instance ready to serve. second step is to create auto scaling group. where we specify scaling policy on basis of which scale up and down of ec2 instances should happen. like cpu,disk perct.</br>
 11. We can create dev user with access to ec2 and s3 only. for that create new user via IAM. and assign desired policy to that user from set permissions section.</br>
-12. SNS - simple notification service. it helps to react to events happening in other aws services. sender can send message to sns topic and all subscriber can recieve it if they register for it. sender can be our own microservices or aws own service like cloud watch alarm</br>
-13. cloud watch service can monitor cpu usage and send the message to topic if it passes some threshold. then via subscriptions this message will be sent to desired target.</br>
-14. S3 vs EBS vs EFS -> Simple Storage system i.e. s3 is an object store, it is used to store static data like images, log files etc.  EBS (elastic block storage) and EFS (elastic file storage) can be attached to EC2 for writing and reading data. key diff is that EBS can be mounted to 1 EC2 instance only, where as EFS can be mounted with multiple EC2 instances.</br>
-15. s3 storage classes. in case needed go through -> https://www.geeksforgeeks.org/amazon-s3-storage-classes/ </br>
-16. RDS and dynamo db of AWS- rds is relational database service. dynamo db is no sql db.</br>
-17. Types of load balancers -> https://linuxhint.com/load-balancers-types-aws/ </br>
+12. **SNS - simple notification service.** it helps to react to events happening in other aws services. sender can send message to sns topic and all subscriber can recieve it if they register for it. sender can be our own microservices or aws own service like cloud watch alarm</br>
+13. **cloud watch service** can monitor cpu usage and send the message to topic if it passes some threshold. then via subscriptions this message will be sent to desired target.</br>
+14. **S3 vs EBS vs EFS** -> Simple Storage system i.e. s3 is an object store, it is used to store static data like images, log files etc.  EBS (elastic block storage) and EFS (elastic file storage) can be attached to EC2 for writing and reading data. key diff is that EBS can be mounted to 1 EC2 instance only, where as EFS can be mounted with multiple EC2 instances.</br>
+15. **s3 storage classes.** in case needed go through -> https://www.geeksforgeeks.org/amazon-s3-storage-classes/ </br>
+16. **RDS and dynamo db of AWS**- rds is relational database service. dynamo db is no sql db.</br>
+17. **Types of load balancers** -> https://linuxhint.com/load-balancers-types-aws/ </br>
 
 
 ### Spring
 1. https://idemia.udemy.com/course/spring-interview-questions-and-answers </br>
 2. life cycle of bean. https://howtodoinjava.com/spring-core/spring-bean-life-cycle/ </br>
-3. https://stackoverflow.com/questions/10604298/spring-component-versus-bean</br>
-4. @SpringBootApplication: It is a combination of three annotations @EnableAutoConfiguration, @ComponentScan, and @Configuration.</br>
+3. **Spring component vs Spring bean** https://stackoverflow.com/questions/10604298/spring-component-versus-bean</br>
+4. **@SpringBootApplication** It is a combination of three annotations @EnableAutoConfiguration, @ComponentScan, and @Configuration.</br>
 5. **transaction propagation level**-> https://www.baeldung.com/spring-transactional-propagation-isolation<br>
 @Transactional annotation is applied on class level or can also be applied to method level.<br>
 REQUIRED, SUPPORTS, MANDATORY, NEVER, NOT_SUPPORTED, REQUIRES_NEW, NESTED 
+6. **idempotent** HTTP method is an HTTP method that can be called many times without different outcomes. *POST is NOT idempotent. GET, PUT, DELETE, HEAD, OPTIONS and TRACE are idempotent*<br> Since post create new record, so it will always create a newer record and hence different object.
+
+### JPA - Hibernate
+1. JPA (Java Persistence API) is a specification for ORM (Object-Relational Mapping) in Java, while Hibernate is an implementation of JPA.<br>
+2. pagination in spring boot hibernate -> https://stackoverflow.com/questions/32434058/how-to-implement-pagination-in-spring-boot-with-hibernate<br>
+3. **cascade types of jpa** -><br>
+3.1 **CascadeType.ALL:** This cascades all operations - including persist, merge, remove, and refresh - from the parent entity to the associated child entities.<br>
+3.2 **CascadeType.PERSIST:** This cascades the persistent operation from the parent entity to the associated child entities.<br>
+3.3 **CascadeType.MERGE:** This cascades the merge operation from the parent entity to the associated child entities.<br>
+3.4 **CascadeType.REMOVE:** This cascades the remove operation from the parent entity to the associated child entities.<br>
+3.5 **CascadeType.REFRESH:** This cascades the refresh operation from the parent entity to the associated child entities.<br>
+3.6 **CascadeType.DETACH:** This cascades the detach operation from the parent entity to the associated child entities.<br>
+4. @ManyToMany and @OneToMany associations use the default FetchType.LAZY strategy, while the @ManyToOne and @OneToOne associations use the FetchType.EAGER strategy<br>
+
 
 ### Microservices
 1. **Monolith vs SOA vs Microservices** -><br>
@@ -169,6 +187,7 @@ https://www.youtube.com/watch?v=WnZ7IcaN_JA<br>
 Here failure event will be used by microservice to decide there action and in such case compensating query needs to be fired to undo changes.<br>
 6.2.2 **orchestration**->It is command based. here single central orchestrator service manages the transaction flow. disadv -> here it is so much depedent on central service. and change done in any service will affect central service.<br>
 If any of the microservices encounter a failure, the orchestrator is responsible for invoking the necessary compensating transactions<br>
+7. circuit breaker, api gateway, aggregator, asynchronous messaging
 
 
 

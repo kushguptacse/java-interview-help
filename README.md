@@ -216,4 +216,4 @@ zuul is an example of api gateway. kong is also one of them.<br>
 It act as a entry point to access any api and provide standard api contract and abstract how the response is returned back to client using how many microservices. here authentication, monitoring, caching can also be implemented.<br>
 16. **Forward proxy vs reverse proxy->** when emp makes req, proxy will intercept req and either can block req or make call to servers. here server does not know from which client machine req is coming. we can also implement client cache on proxy. on other hand reverse proxy is just opposite. here client send requests. and proxy server will intercept it and send request to 1 of the multiple servers. here client does not know which server will be recieving the request. it is used for load balancing also.<br>
 https://www.youtube.com/watch?v=AuINJdBPf8I&list=PLqq-6Pq4lTTbEzejFKFRYfkLGYyOOwq58&index=13<br>
-17. **consistent hashing->**https://www.youtube.com/watch?v=zaRkONvyGr8<br>
+17. **consistent hashing->**https://www.youtube.com/watch?v=zaRkONvyGr8 <br>

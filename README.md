@@ -187,7 +187,8 @@ https://www.youtube.com/watch?v=WnZ7IcaN_JA<br>
 Here failure event will be used by microservice to decide there action and in such case compensating query needs to be fired to undo changes.<br>
 6.2.2 **orchestration**->It is command based. here single central orchestrator service manages the transaction flow. disadv -> here it is so much depedent on central service. and change done in any service will affect central service.<br>
 If any of the microservices encounter a failure, the orchestrator is responsible for invoking the necessary compensating transactions<br>
-7. circuit breaker, api gateway, aggregator, asynchronous messaging
+7. **Design pattern**-> circuit breaker, api gateway, aggregator, asynchronous messaging
+8. **
 
 
 

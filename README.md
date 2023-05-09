@@ -187,8 +187,57 @@ https://www.youtube.com/watch?v=WnZ7IcaN_JA<br>
 Here failure event will be used by microservice to decide there action and in such case compensating query needs to be fired to undo changes.<br>
 6.2.2 **orchestration**->It is command based. here single central orchestrator service manages the transaction flow. disadv -> here it is so much depedent on central service. and change done in any service will affect central service.<br>
 If any of the microservices encounter a failure, the orchestrator is responsible for invoking the necessary compensating transactions<br>
-7. **Design pattern**-> circuit breaker, api gateway, aggregator, asynchronous messaging
-8. **
+7. **Microservices Design pattern**-> circuit breaker, api gateway, aggregator, asynchronous messaging,saga design pattern<br>
+8. **Domain Driven Design** is a framework for modelling large systems. here we look into problem from top to down. When we are designing product, aim should not be on technology, but on business it is full-filling. this design focus on domain and sub-domains.<br>
+https://www.youtube.com/watch?v=xjx4Zkh0NDU
+8.1 When we want to migrate the monolithic into microservices.so we want to proceeed in phase wise manner(strangler pattern)<br>
+8.2 Object Model First approach. here we identify what are the database tables and how different tables are related to each other. for example all the orders related table will come under order domain, all payments related tables comes under payment domain model, inventory table under table domain.there could be further sub-domains also possible.<br>
+8.3 Once the domain models are identified, We then create bounded context.<br>
+8.4. **Bounded Context**-> it is a concept in **Domain Driven Design(DDD)**.It creates a logical boundary between microservices. They are grouping of domain/sub-domains where 2 domains will not conflict each other. there might be possibility that same sub-domains are shared with-in same bounded context. but with in 1 bounded context they will have different meaning.<br>
+8.5 Example-> order domain, payment domain, catalogue sub domain they will come under sales bounded context. catalogue sub domain, Inventory domain comes under inventory bounded context. sales bounded context will have 2 microservice in such case, order and payment. inventory bounded context will have 1 microservice inventory.<br>
+8.6 here we can see that 'catalogue sub domain' is there in both bounded context. but for sales it will be related to order purchase, order details, order status. on the other hand same 'catalogue sub domain' under inventory bounded context will be related to quantity, location related information.<br>
+8.7 Rule-> one microservices will always has 1 bounded context. 1 bounded context can have 1 or more microservices<br>
+8.8 **strangler pattern->** Now while implementing we will pick least complex and simpler component first and convert it into seperate microservice. and call it say via rest api from big component. once everything work fine. we will move ahead and will create 1 more microservice from big monolithic. and will test integeration of these 3 together.<br>
+9.  **CDC - Consumer Defined Contract** -> in it we have provider (api that will be exposed) and consumer(user of that api). so it is a contract between them. both consumer and provider will have there test case ready to check that any deployment is adhering to it and if unable to do so, deployment is rejected.<br>
+10. Client certificate is a method for authenticating the api user.<br>
+11. **Service layer monitoring and semantic monitoring->** <br>
+11.1 Service layer monitoring checks if service is working as expected. it is done by health endpoints,grafana,logstash etc.<br>
+11.2 Semantic Monitoring checks how overall system is performing. it basically examine one complete user flow like placing order and payment and in one go. it is achived by automation/functional testing<br>
+12. **Continous Monitoring->** is a automated process which periodically checks the system for any security risk.<br>
+13. **Idempotence**-> It is a concept which states that same output for same input.<br> 
+13.1 In terms of microservice it is used to make microservice more resilient. suppose microservice takes input from message broker. so if by mistake broker send same message twice. microservice should be able to handle it. it can be achieved by making sure every message has unique identifier and once the micro-service recieved message it checks if same message is there in it's local db with status as processed. if not it will process it else it will ignore it.<br>
+14. **Service Discovery** -> https://www.youtube.com/watch?v=GboiMJm6WlA&list=PLqq-6Pq4lTTbEzejFKFRYfkLGYyOOwq58&index=4<br>
+is used to find where service is. it contains entry of key value pair for each service where key is service name and value is ip.<br>
+14.1 **client side service discovery**->here the client service which want to invoke other service B, first check the service registory and then make call to the actual service. but here client needs to manage the loads and decided which of the service should be called.<br>
+14.2 **server side service discovery**->Here external load balancer is there, which will make call to the appropriate service using service registory. All client needs to know is the elastic ip of load balancer.<br>
+14.3 example of service register system -> etcd in k8s, apache zookeeper, eureka<br>
+15. **Api Gateway Pattern**->https://www.youtube.com/watch?v=1vjOv_f9L8I&list=PLqq-6Pq4lTTbEzejFKFRYfkLGYyOOwq58&index=11<br>
+zuul is an example of api gateway. kong is also one of them.<br>
+It act as a entry point to access any api and provide standard api contract and abstract how the response is returned back to client using how many microservices. here authentication, monitoring, caching can also be implemented.
+16. **Forward proxy vs reverse proxy->** when emp makes req, proxy will intercept req and either can block req or make call to servers. here server does not know from which client machine req is coming. we can also implement client cache on proxy. on other hand reverse proxy is just opposite. here client send requests. and proxy server will intercept it and send request to 1 of the multiple servers. here client does not know which server will be recieving the request. it is used for load balancing also.<br>
+https://www.youtube.com/watch?v=AuINJdBPf8I&list=PLqq-6Pq4lTTbEzejFKFRYfkLGYyOOwq58&index=13<br>
+17. **consistent hashing->**https://www.youtube.com/watch?v=zaRkONvyGr8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -62,6 +62,7 @@ It uses locking of bucket level instead of locking entire collection like hashTa
 10. **Deamon Thread** are low priority thread that runs on background. we can also make our own thread as deamon thread by calling setDaemon method on thread object else by default it will be user thread. garbage collector thread is example of deamon thread. When all user threads have completed their execution, the JVM terminate. at that time If JVM finds a running daemon thread, it terminates the thread and, after that, shutdown it. <br/>
 11. **Thread.sleep** is static method. It pauses current thread but does not release lock.throws InterruptedException <br/>
 12. **Thread.yield** is static method. it provides info to scheduler that current thread is ready to suspend the execution of the current thread. but it will depend on scheduler if it is suspended or not. just like sleep it also does not release lock. <br/>
+13. Difference between thread and Executors.newSingleThreadExecutor -> https://www.baeldung.com/java-single-thread-executor-service <br>
 
 ### Database
 1. **transaction isolation levels**-> <br>
@@ -79,17 +80,6 @@ https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/ <br>
 No sql supports partition tolerance always.<br>
 AP - Cassandra<br>
 CP - MongoDB<br> if master down, then till it is elected back system will not be available for write operation.<br>
-
-### Security
-1. CORS - cross origin request sharing. when 1 app from 1 domain want to access api from other domain. it will not be allowed by default. need to use @CrossOrigin anotation provided by spring. <br/>
-2. CSRF - cross site request forgery. here in a browser window suppose linkedin is open and if another site get access to valid session and by using it, try to get info of linkedin that will be called CSRF. spring prevent it by using csrf filter which attach csrf token with each req. and hence fake req will not have this token to get illegal info. <br/>
-
-### Design pattern
-1. **SOLID design principle**-> single responsibilty, open close, liskov substituion, interface segregation, dependency inversion<br>
-2. **creational** -> how to create objects while hiding the creation logic-> singleton(Runtime.getRuntime()), prototype(Object.clone), builder (StringBuilder), factory method(Calendar.getInstance)<br>
-3. **Structural**  -> How classes and object are arranged-> Adaptor(java.io.InputStreamReader and java.io.OutputStreamWritter), proxy(Spring framework - aop, transaction), Decorator(BufferedOutputStream decorates OutputStream Object) <br>
-4. **Behavioral** -> How objects interact with eache other-> Iterator(java iterator), template(Spring jdbc), chain of responsibility(javax.servlet.Filter), Strategy (Collections.sort -> java.util.Comparator)<br>
-https://github.com/kushguptacse/designPattern<br>
 
 ### sql
 1. **DDL - Data definition language**. it is used to create db schema or structure. create, alter, drop, rename, truncate.<br/>
@@ -120,7 +110,25 @@ A GROUP BY clause requires that every column that the query returns is either a 
 18. we can only do rollback on un-committed commands. once commit is done it is saved permanently.<br>
 19. we can delete data from 2 tables simulatenously by using delete query and join those 2 tables.<br>
 20. **Delete duplicate records->** first using count, group by and having we can find duplicate rows. then use delete query along with in clause and max function to remove one of them. complete example https://www.sqlshack.com/different-ways-to-sql-delete-duplicate-rows-from-a-sql-table/<br>
-21. to identify which query is taking long time?
+21.**find emp with same salary->** select emp1.* from emp emp1 , emp emp2 where emp1.sal==emp2.sal and emp1.name <> emp2.name <br>
+22. **find odd rows and even rows->** select * from tablename where mod(salary,2)=0;<br>
+23. **procedure and functions ->** function can return some value and can be called from inside sql query, procedure itself. but procedure cannot be called from function, or sql query. it cannot return any value.<br>
+24. to identify which query is taking long time?<br>
+25. **find manager of employee ->** select e.empid, e.empname as emp, m.empname as manager from employee e, mngr m where e.empid=m.mgrid;<br>
+26. **find employee with no mgr->** left uter join select e.empid, e.empname as emp, m.empname as manager from employee e, mngr m where m.mgrid=e.empid(+);<br>
+27. **find employees who are also manager**-> SELECT * FROM EMPLOYEES WHERE (EMPLOYEE_ID IN (SELECT MANAGER_ID FROM EMPLOYEES));<br>
+
+### Security
+1. CORS - cross origin request sharing. when 1 app from 1 domain want to access api from other domain. it will not be allowed by default. need to use @CrossOrigin anotation provided by spring. <br/>
+2. CSRF - cross site request forgery. here in a browser window suppose linkedin is open and if another site get access to valid session and by using it, try to get info of linkedin that will be called CSRF. spring prevent it by using csrf filter which attach csrf token with each req. and hence fake req will not have this token to get illegal info. <br/>
+
+### Design pattern
+1. **SOLID design principle**-> single responsibilty, open close, liskov substituion, interface segregation, dependency inversion<br>
+2. **creational** -> how to create objects while hiding the creation logic-> singleton(Runtime.getRuntime()), prototype(Object.clone), builder (StringBuilder), factory method(Calendar.getInstance)<br>
+3. **Structural**  -> How classes and object are arranged-> Adaptor(java.io.InputStreamReader and java.io.OutputStreamWritter), proxy(Spring framework - aop, transaction), Decorator(BufferedOutputStream decorates OutputStream Object) <br>
+4. **Behavioral** -> How objects interact with eache other-> Iterator(java iterator), template(Spring jdbc), chain of responsibility(javax.servlet.Filter), Strategy (Collections.sort -> java.util.Comparator)<br>
+https://github.com/kushguptacse/designPattern<br>
+5. Create Immutable class -> https://www.geeksforgeeks.org/create-immutable-class-java/# <br>
 
 ### AWS
 1. **Regions** -> aws services are spread across multiple locations and they are called regions.</br>
@@ -216,4 +224,6 @@ zuul is an example of api gateway. kong is also one of them.<br>
 It act as a entry point to access any api and provide standard api contract and abstract how the response is returned back to client using how many microservices. here authentication, monitoring, caching can also be implemented.<br>
 16. **Forward proxy vs reverse proxy->** when emp makes req, proxy will intercept req and either can block req or make call to servers. here server does not know from which client machine req is coming. we can also implement client cache on proxy. on other hand reverse proxy is just opposite. here client send requests. and proxy server will intercept it and send request to 1 of the multiple servers. here client does not know which server will be recieving the request. it is used for load balancing also.<br>
 https://www.youtube.com/watch?v=AuINJdBPf8I&list=PLqq-6Pq4lTTbEzejFKFRYfkLGYyOOwq58&index=13<br>
-17. **consistent hashing->**https://www.youtube.com/watch?v=zaRkONvyGr8 <br>
+17. **consistent hashing->** https://www.youtube.com/watch?v=zaRkONvyGr8 <br>
+18. functional testing, load testing and resilience testing(how app perform in case of infra failure) are 3 types of testing involved in microservice.<br>
+19. 

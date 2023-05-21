@@ -117,6 +117,7 @@ A GROUP BY clause requires that every column that the query returns is either a 
 25. **find manager of employee ->** select e.empid, e.empname as emp, m.empname as manager from employee e, mngr m where e.empid=m.mgrid;<br>
 26. **find employee with no mgr->** left uter join select e.empid, e.empname as emp, m.empname as manager from employee e, mngr m where m.mgrid=e.empid(+);<br>
 27. **find employees who are also manager**-> SELECT * FROM EMPLOYEES WHERE (EMPLOYEE_ID IN (SELECT MANAGER_ID FROM EMPLOYEES));<br>
+28. **Prefer group by over distinct**, they both are similar in performance but in some database group by performs faster.<br>
 
 ### Security
 1. CORS - cross origin request sharing. when 1 app from 1 domain want to access api from other domain. it will not be allowed by default. need to use @CrossOrigin anotation provided by spring. <br/>
